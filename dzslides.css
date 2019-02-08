@@ -83,10 +83,3 @@ html { background-color: black; }
   pre.sourceCode {
       background-color: rgb(245,245,245);
   }
-
-  .theorem { background-color: lightyellow;
-             border: solid;
-             border-width: 2px; 
-             margin-left: 5%;
-             width: 85%; 
-             }

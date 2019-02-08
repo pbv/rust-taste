@@ -5,7 +5,7 @@ date: Janeiro 2019
 ...
 
 
-# Motivação
+# Contexto
 
 ## O que é o *Rust*?
 
@@ -27,30 +27,35 @@ Uma linguagem para **programação de sistemas** que combina:
 
 ## Esta apresentação
 
-* Visão geral da linguagem
+* Contexto
+* Vista geral da linguagem
 * Conceitos de *ownership* e *borrowing*
 
+<!-- 
 Pre-requisitos:
 
 * conhecimentos básico de C
 * opcionais: um pouco de Haskell, C++, Python
-
-
-
+-->
 
 ## Programação de sistemas?
 
 * *kernels* 
 * *device drivers* 
-* *web browsers*
 * sistemas embutidos/críticos/tempo real
 * sistemas móveis (*smarphones*)
+* bibliotecas
+* compiladores e interpretadores
+* *runtime systems*
+* *backends web*
+* ...
+
 
 ## *Performance* e previsibilidade?
 
 * Compilação para código máquina nativo
-     - usa a infraestrutura *LLVM*
-* Sem necessitar de *runtime system* ou *garbage collector*
+     - usa a infra-estrutura de compiladores *LLVM*
+* Não necessita de *runtime system* ou *garbage collector*
 * Controlo sobre a *libertação de recursos*
      - memória, *file handles*, *locks*
 	 - previsibilidade sobre *quando* são libertados
@@ -58,13 +63,13 @@ Pre-requisitos:
 
 ## Segurança e fiabilidade?
 
-Garantir durante a compilação:
+Garantias durante a compilação:
 
-* A memoria alocada é libertada *exatamente* uma vez
-* Não ocorrem erros de execução
+* Recursos alocados são libertados *exatamente* uma vez
+* Ausência de erros de execução
 	- *segmentation faults*, *null-pointer exceptions*,
-	*iterator invalidation*
-* Não usa recursos já libertados (*use-after-free*)
+	  *iterator invalidation*
+* Prevenir acesso a recursos já libertados (*use-after-free*)
 * Ausência de *race conditions* (concorrência)
 
 NB: sem custos extra de execução!
@@ -73,8 +78,8 @@ NB: sem custos extra de execução!
 ## Utilizadores de *Rust* 
 
 * Mozilla 
-    - *engine* CSS do Firefox
-	- *Servo* (*engine* de próxima gereação)
+    - Stylo (*engine* CSS do Firefox)
+	- Servo (*next-gen browser engine*)
 * Dropbox
 * Cloudflare
 * Atlassian
@@ -110,7 +115,6 @@ Experimentar:
 
 ## Variáveis 
 
-*Let* declara variáveis:
 
 ~~~rust
 let x = 5;
@@ -136,7 +140,7 @@ x += 1;         // OK
 ~~~rust 
 i8, i16, i32, i64, ...   // com sinal
 u8, u16, u32, u64, ...   // sem sinal
-f32, f64                 // virgula flutuante
+f32, f64                 // vírgula flutuante
 bool                     // booleanos
 char, String             // carateres, strings
 ~~~
@@ -166,7 +170,7 @@ fun add_one(x: i32) -> i32 {
 }
 ~~~
 
-(Serve também para terminar cedo.)
+Pode ser usado para terminar no meio do corpo.
 
 ## Funções (cont.)
 
@@ -175,7 +179,12 @@ fun add_one(x: i32) -> i32 {
 
 ~~~rust
 fn digit(n: u32) -> (u32, u32) {
-    (n%10, n/10)   // digito, restantes
+    (n%10, n/10)   // algarismo, quociente
+}
+
+fn main() {
+	let (d,r) = digit(1234);
+	println!("{}, {}", d,r); // imprime 4, 123
 }
 ~~~
 
@@ -260,7 +269,7 @@ sum_squares n = sum (map (\i -> i*i) [1..n])
 
 ## Estruturas
 
-Permitem *agrupar* mútiplos tipos num só:
+*Agrupar* múltiplos valores num só:
 
 ~~~rust
 struct Person {
@@ -276,8 +285,7 @@ let alice = Person {
 
 ## Enumerações
 
-Permitem *optar* entre *alternativas*
-mutuamente exclusivas:
+Optar entre várias *alternativas* mutuamente exclusivas:
 
 ~~~rust
 enum TrafficLight {
@@ -292,7 +300,7 @@ let light = TrafficLight::Red;
 ## Enumerações (2)
 
 Ao contrário do C/C++, as enumerações podem
-ter campos.
+ter *campos*.
 
 ~~~rust
 enum Shape {
@@ -302,7 +310,7 @@ enum Shape {
 }
 ~~~
 
-Equivalentes a *tipos algébricos* em ML ou Haskell:
+Cf. *tipos algébricos* em ML ou Haskell:
 
 ~~~haskell
 data Shape = Square Float 
@@ -345,7 +353,7 @@ enum Option<T> {
 
 * Tipo paramétrico sobre `T` ("genérico")
 * Em Haskell: corresponde ao tipo `Maybe`
-* Escrutinar o resultado com `match` evita NPEs 
+* Encaixe de padrões evita os NPEs
 
 <!--
 ~~~haskell
@@ -358,6 +366,7 @@ data Maybe a = Nothing | Just a
 
 ~~~rust	
 fn lookup(name: String) -> Option<Person> {
+   // lookup a name in a DB
   ...
 }
 
@@ -413,7 +422,7 @@ fn main() {
    let p = Person { 
        ... 
    };
-   bye(p);  // transfere `p`
+   bye(p);  // transfere "ownership"
    println!("{}", p.age); 
    // error[E0382]: borrow of moved value: `p`
 }
@@ -431,7 +440,7 @@ fn bye(p: &Person) {
 
 fn main() {
    let p = Person { ...  };
-   bye(&p);     // &Person (borrow) 
+   bye(&p); // transfere "immutable borrow"
    println!("{}", p.age);  // OK
 }
 ~~~
@@ -486,7 +495,7 @@ fn set_age(p1: &mut Person, years: u32) {
 
 fn main() {
 	let mut p = Person { ... };
-	set_age(&mut p, 30); 
+	set_age(&mut p, 30); // OK
 	// NB: `p' tem ser declarado `let mut`
 }
 ~~~
@@ -517,9 +526,27 @@ fn main() {
 
 * Permite garantir libertação de memória
 * Elimina erros de *use-after-free*
-* Mas também outros erros 
+* Mas também
     - *iterator invalidation*
 	- *race conditions* em programas concorrentes
+
+
+## *Use after free*
+
+~~~rust
+let y: &i32;
+{
+    let x = 5;
+    y = &x;
+}
+println!("{}", y);
+// error[E0597]: `x` does not live long enough
+~~~
+
+* `y` aponta para valor que foi libertado
+ (*dangling-pointer*)
+* Mas o sistema tipos rejeita este programa
+
 
 ## *Iterator invalidation*
 
@@ -533,11 +560,11 @@ s = 0
 for i in v:
 	s += i
 	v.append(i)
-	# modificação no meio da iteração 
-	# em Python 3.6: o ciclo não termina!
-# fim do ciclo	
+	# modificar `v` no meio da iteração
+	# Python 3.6: o ciclo não termina!
+# fim do ciclo;
+# é seguro modificar `v` aqui
 v.append(999)
-# NB: aqui podemos modificar
 ~~~
 
 ## Em Rust
@@ -549,12 +576,36 @@ let mut v : Vec<i32> = vec![1,2,3];
 let mut s = 0;
 for &i in v.iter() {
 	s += i;
-	v.push(i);
+    v.push(i);
 	// error[E0502]: cannot borrow `v` as mutable because it is also borrowed as immutable
 }
 v.push(999); // OK
 ~~~
 
+Experimentar: [https://play.rust-lang.org](https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=d60a624bdb2942616cd9da665c9816be)
+
+
+## Extras 
+
+* Polimorfismo paramétrico ("genéricos")
+* Associação de métodos a tipos
+* *Traits* (aka *type classes*)
+* *Lifetimes* explicitos de referências
+* *Macros*
+* Tratamentos de erros
+* Concorrência
+* Systema *build* `cargo` e pacotes (*crates*)
+
+## Mais informação
+
+*Rust by Example*
+
+:  [https://doc.rust-lang.org/stable/rust-by-example/](https://doc.rust-lang.org/stable/rust-by-example/)
+
+
+*Rust Book*
+
+: [https://doc.rust-lang.org/book/](https://doc.rust-lang.org/book/)
 
 
  
