@@ -471,8 +471,6 @@ fn main() {
 
 ## Transferência de *ownership*
 
-Passar um valor de tipo `T` transfere a *ownership*.
-
 ~~~rust
 fn bye(p: Person) {
    println!("Goodbye, {}", p.name);
@@ -481,13 +479,20 @@ fn bye(p: Person) {
 fn main() {
    let p = Person { ... };
    bye(p);  // transfere "ownership"
-   println!("{}", p.age); ❌
+   println!("{}", p.age);
 }
 ~~~
+
+. . .
+
+<span style="position:absolute; top:23.5ex; left:32ex;">❌</span>
 
 ~~~
 error[E0382]: borrow of moved value: `p`
 ~~~
+
+Passar um valor de tipo `T` transfere a *ownership*.
+
 
 ## Empréstimo
 
@@ -517,19 +522,27 @@ Uma referência `&T` (*immutable borrow*):
 
 ## Leitura mas não escrita
 
- O compilador proibe escrita usando referências `&T`.
 
 ~~~rust
 /* Every time we say goodbye
    I die a little ... */
 fn bye(p: &Person)  {
 	println!("Goodbye, {}", p.name);
-	p.age += 1; ❌
+	p.age += 1; 
 }
 ~~~
+
+. . . 
+
+<span style="position: absolute; top: 17ex; left:20ex;">❌</span>
+
 ~~~
 error[E0594]: cannot assign to `p.age` which is behind a `&` reference
 ~~~
+
+O compilador proibe escrita usando referências `&T`.
+
+
 
 
 ## Multiplas referências imutáveis
@@ -542,10 +555,12 @@ fn eq_age(p1:&Person, p2:&Person) -> bool
 
 fn main() {
 	let p = Person { ... };
-	let b = eq_age(&p, &p);    // OK
+	let b = eq_age(&p, &p); 
 	...
 }
 ~~~
+
+Multiplas referências: OK se for apenas para leitura.
 
 
 ## Empréstimo mutável
@@ -580,9 +595,12 @@ fn copy_age(p1: &mut Person, p2: &Person) {
 
 fn main() {
     let mut p = Person { ... };
-    copy_age(&mut p, &p); ❌
+    copy_age(&mut p, &p);
 }
 ~~~
+. . .
+
+<span style="position: absolute; top: 23.5ex; left:31ex;">❌</span>
 
 ~~~
 error[E0502]: cannot borrow `p` as immutable because it is also borrowed as mutable
@@ -591,11 +609,11 @@ error[E0502]: cannot borrow `p` as immutable because it is also borrowed as muta
 ## Problemas com *aliasing*
 
 * *Aliasing* pode causar erros subtis 
-* Vamos ver dois tipos de erros comuns
-  apanhados pelo sistema de *ownership*
+* Alguns erros comuns:
     - *use-after-free*
     - *iterator invalidation*
-* Também evita *race conditions* em programas concorrentes
+	- *race conditions* (programas concorrentes)
+* Todos estes são **rejeitados** pelo sistema de *ownership*
 
 
 ## *Use after free* (ou *dangling pointer*)
@@ -604,10 +622,15 @@ error[E0502]: cannot borrow `p` as immutable because it is also borrowed as muta
 let y: &Person;
 {
     let x = Person { ... };
-    y = &x; ❌
+    y = &x;
 }
 println!("{} {}", y.name, y.age);
 ~~~
+
+. . .
+
+<span style="position: absolute; top: 15ex; left:15ex;">❌</span>
+
 ~~~
 error[E0597]: `x` does not live long enough
 ~~~
@@ -629,9 +652,9 @@ v = [1,2,3]
 s = 0
 for i in v:
 	s += i
-	v.append(i)	# ERROR: modifica `v` 
+	v.append(i)	# ERRO: modifica `v` 
 # fim do ciclo: é seguro modificar `v` 
-v.append(999)
+v.append(4)
 ~~~
 </div>
 
@@ -642,16 +665,24 @@ let mut v : Vec<i32> = vec![1,2,3];
 let mut s = 0;
 for &i in v.iter() {
 	s += i;
-    v.push(i); ❌
+    v.push(i); 
 }
-v.push(999); // OK
+v.push(4);
 ~~~
+
+. . .
+
+<span style="position: absolute; top: 17ex; left:18ex;">❌</span>
+
 ~~~
 error[E0502]: cannot borrow `v` as mutable because it is also borrowed as immutable
 ~~~
 
-Experimentar: [https://play.rust-lang.org](https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=d60a624bdb2942616cd9da665c9816be)
+NB: `v.push` fora do ciclo **não** é erro.
 
+<!--
+Experimentar: [https://play.rust-lang.org](https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=d60a624bdb2942616cd9da665c9816be)
+-->
 
 ## Questões mais avançadas
 
