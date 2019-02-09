@@ -16,7 +16,7 @@ Uma linguagem para **programação de sistemas** que combina:
 
 * segurança
 * fiabilidade
-* *performance*
+* *performance* 
 * previsibilidade 
 * abstrações de alto-nível
  
@@ -100,7 +100,7 @@ NB: sem custos extra de execução!
 <img align="center" width="90%" src="images/rust-influences.svg"/>
 
 
-# Visão geral
+# Hello, Rust!
 
 ## Hello, world!
 
@@ -120,6 +120,7 @@ Experimentar:
 
 ## Variáveis 
 
+Declaradas com `let`:
 
 ~~~rust
 let x = 5;
@@ -129,9 +130,13 @@ Por omissão são **imutáveis**:
 
 ~~~rust
 let x = 5;
-x += 1;
-// error[E0384]: cannot assign twice to immutable variable `x`
+x += 1; ❌
 ~~~
+~~~
+error[E0384]: cannot assign twice to immutable variable `x`
+~~~
+
+## Variáveis (cont.)
 
 Declaramos **variáveis mutáveis** explictamente:
 
@@ -167,7 +172,7 @@ fn max(x: i32, y: i32) -> i32 {
 
 * Tipos dos argumentos e resultado (**não** são inferidos)
 * O corpo da função é uma **expressão** 
-* Podemos usar `return` para terminar a função:
+* `return` explícíto para terminar cedo:
   
 ~~~rust
 fun max(x: i32, y: i32) -> i32 {
@@ -179,7 +184,7 @@ fun max(x: i32, y: i32) -> i32 {
 ## Funções (cont.)
 
 * A função retorna um único resultado
-* Mas pode ser um *tuplo*
+* Pode ser um *tuplo*
 
 ~~~rust
 fn digit(n: u32) -> (u32, u32) {
@@ -233,15 +238,14 @@ fn sum_squares(n: u32) -> u32 {
 	   s += i*i;
 	   i += 1;
    }
-   s
+   s  // resultado 
 }
 ~~~
 
-O resultado é o valor final de `s`.
 
 ## Ciclos (2)
 
-Versão com  `for`:
+Usando um ciclo  `for`:
 
 ~~~rust
 fn sum_squares(n: u32) -> u32 {
@@ -254,11 +258,11 @@ fn sum_squares(n: u32) -> u32 {
 ~~~
 
 * `1..n+1` itera de 1 até $n$ (**não** inclui o limite)
-* O âmbito de `i` é (apenas) o corpo do ciclo
+* O âmbito de `i` é o corpo do ciclo
 
 ## Ciclos (3)
 
-Versão funcional (usando iteradores):
+Versão funcional:
 
 ~~~rust
 fn sum_squares(n: u32) -> u32 {
@@ -358,14 +362,19 @@ Experimentar:
 
 ## *Null pointer exceptions*
 
-* Em C/C++/Java:
-  `NULL` é usando para representar a *ausência* de um valor.
-* Exemplo: procurar um carater numa cadeia.
+Em C/C++/Java:
+`NULL` é usando para representar a *ausência* de um valor.
+
+
 
 ~~~c
+/* Exemplo em C:
+   Procurar um carater numa cadeia
+*/
 char *find(char *txt, char c) {
 	for (char *ptr=txt; *ptr; ptr++) {
-	   if (*ptr == c) return ptr;
+	   if (*ptr == c) 
+		   return ptr; // encontrou
 	}
 	return NULL;  // não encontrou
 }
@@ -386,7 +395,8 @@ int main() {
 }
 ~~~
 
-Se esquecer o teste `ptr == NULL`: *segmentation fault*.
+Se esquecermos o teste `ptr == NULL`:
+*SEGFAULT* durante a execução.
 
 
 ## Programar sem *Nulls*
@@ -395,12 +405,13 @@ Em Rust (e ML/Haskell): usamos uma enumeração.
 
 <div style="font-size:90%">
 ~~~rust
-enum Option<T> {
+enum Option<T> { // definido em std::option
 	None,        // ausência de valor
 	Some(T)      // um valor de tipo T
-}       // pré-definido em std::option
+}
+~~~
 
-
+~~~rust
 fn find(txt: &str, c: char) -> Option<&str> {
     for (i,x) in txt.char_indices() {
         if x == c { return Some(&txt[i..]) } 
@@ -410,7 +421,7 @@ fn find(txt: &str, c: char) -> Option<&str> {
 ~~~
 </div>
 	
-## Usando Option em Rust
+## Usando *Option*
 
 ~~~rust	
 fn main() {
@@ -423,7 +434,7 @@ fn main() {
 ~~~ 
 
 * É **impossível** esquecer o teste `None` / `Some`
-* Não há *segmentation faults*
+* Não pode ocorrer *SEGFAULT*
 
 
 
@@ -452,7 +463,7 @@ fn main() {
 	   age: 30
    };
    println!("{}, {}", p.name, p.age);
-   // p libertado aqui
+   // p é libertado aqui
 }
 ~~~
 
@@ -470,9 +481,12 @@ fn bye(p: Person) {
 fn main() {
    let p = Person { ... };
    bye(p);  // transfere "ownership"
-   println!("{}", p.age); 
-   // error[E0382]: borrow of moved value: `p`
+   println!("{}", p.age); ❌
 }
+~~~
+
+~~~
+error[E0382]: borrow of moved value: `p`
 ~~~
 
 ## Empréstimo
@@ -487,7 +501,7 @@ fn bye(p: &Person) {
 
 fn main() {
    let p = Person { ... };
-   bye(&p); // "immutable borrow"
+   bye(&p);    // immutable borrow
    println!("{}", p.age);  // OK
 }
 ~~~
@@ -506,15 +520,16 @@ Uma referência `&T` (*immutable borrow*):
  O compilador proibe escrita usando referências `&T`.
 
 ~~~rust
+/* Every time we say goodbye
+   I die a little ... */
 fn bye(p: &Person)  {
 	println!("Goodbye, {}", p.name);
-	// every time we say goodbye
-	// I die a little...
-	p.age += 1; 
-	//	error[E0594]: cannot assign to `p.age` which is behind a `&` reference
+	p.age += 1; ❌
 }
 ~~~
-
+~~~
+error[E0594]: cannot assign to `p.age` which is behind a `&` reference
+~~~
 
 
 ## Multiplas referências imutáveis
@@ -554,9 +569,9 @@ fn main() {
 
 * Só pode existir **uma referência** `&mut T` 
 * **Não** podem co-existir referências imutáveis `&T`
-  no mesmo âmbito
+  no mesmo âmbito (*aliasing*)
 
-## Exemplo
+## Exemplo de *aliasing*
 
 ~~~rust
 fn copy_age(p1: &mut Person, p2: &Person) { 
@@ -565,83 +580,91 @@ fn copy_age(p1: &mut Person, p2: &Person) {
 
 fn main() {
     let mut p = Person { ... };
-    copy_age(&mut p, &p);
-    // error[E0502]: cannot borrow `p` as immutable because it is also borrowed as mutable
+    copy_age(&mut p, &p); ❌
 }
 ~~~
 
-## Sistema de tipos com *ownership*
+~~~
+error[E0502]: cannot borrow `p` as immutable because it is also borrowed as mutable
+~~~
 
-Vamos ver exemplos de erros 
-detetados pelo  sistema de *ownership*:
+## Problemas com *aliasing*
 
-- *use-after-free*
-- *iterator invalidation*
+* *Aliasing* pode causar erros subtis 
+* Vamos ver dois tipos de erros comuns
+  apanhados pelo sistema de *ownership*
+    - *use-after-free*
+    - *iterator invalidation*
+* Também evita *race conditions* em programas concorrentes
 
-<!--
-- *race conditions* em programas concorrentes
--->
 
-## *Use after free*
+## *Use after free* (ou *dangling pointer*)
 
 ~~~rust
 let y: &Person;
 {
     let x = Person { ... };
-    y = &x;
+    y = &x; ❌
 }
 println!("{} {}", y.name, y.age);
-// error[E0597]: `x` does not live long enough
+~~~
+~~~
+error[E0597]: `x` does not live long enough
 ~~~
 
-* `y` aponta para um valor que foi libertado
- (*dangling-pointer*)
-* Mas o sistema de tipos rejeita este programa
+A variável `y` aponta para um valor que vai ser libertado
+(*dangling-pointer*).
+
 
 
 ## *Iterator invalidation*
 
-* Modificar uma coleção durante a iteração 
-* Exemplo em Python:
+* Modificar uma coleção enquanto iteramos sobre os seus valores
+* Em C++/Java/Python: *undefined behaviour* ou erro de execução 
 
+<div style="font-size:90%">
 ~~~python
+# Iterator invalidation em Python
 v = [1,2,3]
 s = 0
 for i in v:
 	s += i
-	v.append(i)
-	# modificar `v` no meio da iteração;
-	# o ciclo não termina!
-# fim do ciclo;
-# é seguro modificar `v` aqui
+	v.append(i)	# ERROR: modifica `v` 
+# fim do ciclo: é seguro modificar `v` 
 v.append(999)
 ~~~
+</div>
 
 ## Em Rust
-
-O sistema de tipos deteta o erro durante a compilação:
 
 ~~~rust 
 let mut v : Vec<i32> = vec![1,2,3];
 let mut s = 0;
 for &i in v.iter() {
 	s += i;
-    v.push(i);
-	// error[E0502]: cannot borrow `v` as mutable because it is also borrowed as immutable
+    v.push(i); ❌
 }
 v.push(999); // OK
+~~~
+~~~
+error[E0502]: cannot borrow `v` as mutable because it is also borrowed as immutable
 ~~~
 
 Experimentar: [https://play.rust-lang.org](https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=d60a624bdb2942616cd9da665c9816be)
 
 
-## Para explorar mais tarde
+## Questões mais avançadas
+
+* Alocação na *heap*: `Box`, `Rc`, `Arc`, ...
+* *Lifetimes* explicitos 
+* "*Fighting the borrow checker*"
+
+
+## Não vimos
 
 * Polimorfismo paramétrico ("genéricos")
 * Associação de métodos a tipos
 * *Traits* (aka *type classes*)
-* *Lifetimes* explicitos de referências
-* Alocação na *heap*: `Box`, `Rc`, `Arc`
 * *Macros*
 * Tratamentos de erros
 * Concorrência, *threads*, async I/O
@@ -658,5 +681,8 @@ Experimentar: [https://play.rust-lang.org](https://play.rust-lang.org/?version=s
 
 : [https://doc.rust-lang.org/book/](https://doc.rust-lang.org/book/)
 
+*Learning Rust with Entirely Too Many Linked Lists*
+
+: [https://cglab.ca/~abeinges/blah/too-many-lists/book/](https://cglab.ca/~abeinges/blah/too-many-lists/book/)
 
   
