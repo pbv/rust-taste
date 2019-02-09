@@ -5,7 +5,7 @@ date: Janeiro 2019
 ...
 
 
-# Contexto
+# Introdução
 
 ## O que é o *Rust*?
 
@@ -18,20 +18,21 @@ Uma linguagem para **programação de sistemas** que combina:
 * fiabilidade
 * *performance*
 * previsibilidade 
-
+* abstrações de alto-nível
+ 
 \
 
 <center>
 [https://www.rust-lang.org/](https://www.rust-lang.org/)
 </center>
 
+<!--
 ## Esta apresentação
 
 * Contexto
 * Vista geral da linguagem
 * Conceitos de *ownership* e *borrowing*
 
-<!-- 
 Pre-requisitos:
 
 * conhecimentos básico de C
@@ -50,7 +51,7 @@ Pre-requisitos:
 * *backends web*
 * ...
 
-
+<!--
 ## *Performance* e previsibilidade?
 
 * Compilação para código máquina nativo
@@ -65,17 +66,21 @@ Pre-requisitos:
 
 Garantias durante a compilação:
 
-* Recursos alocados são libertados *exatamente* uma vez
+* Recursos são libertados *exatamente* uma vez
 * Ausência de erros de execução
 	- *segmentation faults*, *null-pointer exceptions*,
 	  *iterator invalidation*
-* Prevenir acesso a recursos já libertados (*use-after-free*)
+* Prevenir acesso a recursos libertados (*use-after-free*)
 * Ausência de *race conditions* (concorrência)
 
 NB: sem custos extra de execução!
+-->
 
+## Controlo vs. segurança 
 
-## Utilizadores de *Rust* 
+<img align="center" width="90%" src="images/languages.svg"/>
+
+## Utilizadores de *Rust* hoje
 
 * Mozilla 
     - Stylo (*engine* CSS do Firefox)
@@ -106,9 +111,9 @@ fn main() {
 ```
 
 
-* `fn`{.rust} declara a função `main` (sem argumentos)
-* Chavetas `{...}` agrupam instruções (como em C/C++)
-* `println!`{.rust} é uma *macro* (símbolo `!`)
+* `fn` declara a função `main` (sem argumentos)
+* `{ ... }` agrupa instruções (como em C/C++)
+* `println!` é uma *macro* (assinalada pelo `!`)
 
 Experimentar:
   [https://play.rust-lang.org](https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=030d80f87f53a328f9dc7875cad93e04)
@@ -120,7 +125,7 @@ Experimentar:
 let x = 5;
 ~~~
 
-Por omissão, são **imutáveis**:
+Por omissão são **imutáveis**:
 
 ~~~rust
 let x = 5;
@@ -140,9 +145,9 @@ x += 1;         // OK
 ~~~rust 
 i8, i16, i32, i64, ...   // com sinal
 u8, u16, u32, u64, ...   // sem sinal
-f32, f64                 // vírgula flutuante
-bool                     // booleanos
-char, String             // carateres, strings
+f32, f64           // vírgula flutuante
+bool               // booleanos
+char, str, String  // carateres, strings
 ~~~
 
 * A *inferência* permite frequentemente omitir tipos
@@ -155,22 +160,21 @@ let x: i32 = 5;
 ## Funções
 
 ~~~rust
-fn add_one(x: i32) -> i32 {
-	x + 1
+fn max(x: i32, y: i32) -> i32 {
+	if x>=y { x } else { y }
 }
 ~~~
 
 * Tipos dos argumentos e resultado (**não** são inferidos)
 * O corpo da função é uma **expressão** 
-* Podemos usar  `return` explícito:
+* Podemos usar `return` para terminar a função:
   
 ~~~rust
-fun add_one(x: i32) -> i32 {
-	return x + 1;
+fun max(x: i32, y: i32) -> i32 {
+	if x >= y { return x; }
+	y
 }
 ~~~
-
-Pode ser usado para terminar no meio do corpo.
 
 ## Funções (cont.)
 
@@ -179,12 +183,13 @@ Pode ser usado para terminar no meio do corpo.
 
 ~~~rust
 fn digit(n: u32) -> (u32, u32) {
-    (n%10, n/10)   // algarismo, quociente
+    (n%10, n/10)
 }
 
 fn main() {
 	let (d,r) = digit(1234);
-	println!("{}, {}", d,r); // imprime 4, 123
+	println!("{}, {}", d,r); 
+	// imprime 4, 123
 }
 ~~~
 
@@ -192,6 +197,8 @@ fn main() {
 Experimentar: 
 [https://play.rust-lang.org/](https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=cf9fc1a1f23c6afe3974e4d85dfaafb2)
 -->
+
+<!--
 
 ## Efeitos colaterais
 
@@ -211,6 +218,8 @@ fn greet(name: String) {
    println!("Hello, {}", name);
 }
 ~~~
+
+-->
 
 ## Ciclos (1)
 
@@ -261,11 +270,15 @@ fn sum_squares(n: u32) -> u32 {
 * `map()` aplica uma função a um iterador
 * `sum()` soma todos os valores 
 
-Em Haskell:
+. . .
+
+<div style="font-size:90%">
+Equivalente em Haskell:
 
 ~~~haskell
-sum_squares n = sum (map (\i -> i*i) [1..n])
+sum_squares n = sum (map (\i->i*i) [1..n])
 ~~~
+</div>
 
 ## Estruturas
 
@@ -299,25 +312,28 @@ let light = TrafficLight::Red;
 
 ## Enumerações (2)
 
-Ao contrário do C/C++, as enumerações podem
+Ao contrário do C/C++: as enumerações podem
 ter *campos*.
 
 ~~~rust
 enum Shape {
-  Square(f32),   // lado
+  Square(f32),         // lado
   Rectangle(f32, f32), // altura, largura
-  Circle(f32),  // raio
+  Circle(f32),         // raio
 }
 ~~~
 
-Cf. *tipos algébricos* em ML ou Haskell:
+. . .
+
+<div style="font-size:90%">
+Equivalente em Haskell:
 
 ~~~haskell
 data Shape = Square Float 
 	       | Rectangle Float Float
 		   | Circle Float
 ~~~
-
+</div>
 
 ## Encaixe de padrões
 
@@ -332,59 +348,92 @@ fn area(sh: Shape) -> f32 {
 }
 ~~~
 
-* Escrutinar usando **encaixe de padrões**.
-* O compilador **obriga** a considerar todos os casos!
+O compilador **obriga** a considerar todos os casos!
+
+\
 
 Experimentar:
 [https://play.rust-lang.org](https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=aabd79bc4aeb327104159e32cdb573fe)
 
-## *Null pointer exceptions* (NPEs)
 
-*  `NULL` é usando para 
-   representar a *ausência* de um valor em C/C++/Java
-* Em Rust: usamos `Option`
+## *Null pointer exceptions*
 
+* Em C/C++/Java:
+  `NULL` é usando para representar a *ausência* de um valor.
+* Exemplo: procurar um carater numa cadeia.
+
+~~~c
+char *find(char *txt, char c) {
+	for (char *ptr=txt; *ptr; ptr++) {
+	   if (*ptr == c) return ptr;
+	}
+	return NULL;  // não encontrou
+}
+~~~
+
+
+
+
+## Usando *Nulls* em C
+
+~~~c
+int main() {
+	char *ptr = find("alice", 'd');
+	if (ptr == NULL) 
+		printf("not found");
+	else 
+		printf("%s", ptr);
+}
+~~~
+
+Se esquecer o teste `ptr == NULL`: *segmentation fault*.
+
+
+## Programar sem *Nulls*
+
+Em Rust (e ML/Haskell): usamos uma enumeração.
+
+<div style="font-size:90%">
 ~~~rust
 enum Option<T> {
-	None,     // ausência de valor
-	Some(T)   // um valor de tipo T
+	None,        // ausência de valor
+	Some(T)      // um valor de tipo T
+}       // pré-definido em std::option
+
+
+fn find(txt: &str, c: char) -> Option<&str> {
+    for (i,x) in txt.char_indices() {
+        if x == c { return Some(&txt[i..]) } 
+    }
+    None
 }
 ~~~
-
-* Tipo paramétrico sobre `T` ("genérico")
-* Em Haskell: corresponde ao tipo `Maybe`
-* Encaixe de padrões evita os NPEs
-
-<!--
-~~~haskell
-data Maybe a = Nothing | Just a
-~~~
--->	
-
+</div>
 	
-## Option
+## Usando Option em Rust
 
 ~~~rust	
-fn lookup(name: String) -> Option<Person> {
-   // lookup a name in a DB
-  ...
-}
-
 fn main() {
-   let n = String::from("alice")
-   match lookup(n) {
-      None => println!("not found"),
-	  Some(p) => println!("{}", p.age)
-   }
+    let r = find("alice", 'd');
+    match r {
+        None => println!("not found"),
+        Some(s) => println!("{}", s),
+    }
 }
 ~~~ 
+
+* É **impossível** esquecer o teste `None` / `Some`
+* Não há *segmentation faults*
+
+
 
 
 # *Ownership* e *borrowing*
 
-## Motivação
+## Objetivos
 
-* O sistema de tipos regista informação sobre a *partilha* de valores
+* O sistema de tipos regista informação 
+  sobre a *partilha* de valores
 * Permite efetuar a libertação de recursos automática
   sem *garbage collection*
 * Permite detetar usos incorretos durante a compilação
@@ -419,9 +468,7 @@ fn bye(p: Person) {
 }
 
 fn main() {
-   let p = Person { 
-       ... 
-   };
+   let p = Person { ... };
    bye(p);  // transfere "ownership"
    println!("{}", p.age); 
    // error[E0382]: borrow of moved value: `p`
@@ -439,8 +486,8 @@ fn bye(p: &Person) {
 }
 
 fn main() {
-   let p = Person { ...  };
-   bye(&p); // transfere "immutable borrow"
+   let p = Person { ... };
+   bye(&p); // "immutable borrow"
    println!("{}", p.age);  // OK
 }
 ~~~
@@ -456,12 +503,13 @@ Uma referência `&T` (*immutable borrow*):
 
 ## Leitura mas não escrita
 
- O compilador não permite a escrita usando referências `&T`.
+ O compilador proibe escrita usando referências `&T`.
 
 ~~~rust
 fn bye(p: &Person)  {
 	println!("Goodbye, {}", p.name);
-	// every time I say goodbye I die a little
+	// every time we say goodbye
+	// I die a little...
 	p.age += 1; 
 	//	error[E0594]: cannot assign to `p.age` which is behind a `&` reference
 }
@@ -472,7 +520,8 @@ fn bye(p: &Person)  {
 ## Multiplas referências imutáveis
 
 ~~~rust
-fn eq_age(p1: &Person, p2: &Person) -> bool {
+fn eq_age(p1:&Person, p2:&Person) -> bool 
+{
 	p1.age == p2.age
 }
 
@@ -496,10 +545,9 @@ fn set_age(p1: &mut Person, years: u32) {
 fn main() {
 	let mut p = Person { ... };
 	set_age(&mut p, 30); // OK
-	// NB: `p' tem ser declarado `let mut`
+	// NB: `p' tem ser `let mut`
 }
 ~~~
-
 
 
 ## Regras de empréstimo imutável
@@ -524,35 +572,37 @@ fn main() {
 
 ## Sistema de tipos com *ownership*
 
-* Permite garantir libertação de memória
-* Elimina erros de *use-after-free*
-* Mas também
-    - *iterator invalidation*
-	- *race conditions* em programas concorrentes
+Vamos ver exemplos de erros 
+detetados pelo  sistema de *ownership*:
 
+- *use-after-free*
+- *iterator invalidation*
+
+<!--
+- *race conditions* em programas concorrentes
+-->
 
 ## *Use after free*
 
 ~~~rust
-let y: &i32;
+let y: &Person;
 {
-    let x = 5;
+    let x = Person { ... };
     y = &x;
 }
-println!("{}", y);
+println!("{} {}", y.name, y.age);
 // error[E0597]: `x` does not live long enough
 ~~~
 
-* `y` aponta para valor que foi libertado
+* `y` aponta para um valor que foi libertado
  (*dangling-pointer*)
-* Mas o sistema tipos rejeita este programa
+* Mas o sistema de tipos rejeita este programa
 
 
 ## *Iterator invalidation*
 
-* Modificar uma coleção durante iteração sobre os valores
-* Erro em C++ (mas também em Java e Python)
-* Exemplo (em Python):
+* Modificar uma coleção durante a iteração 
+* Exemplo em Python:
 
 ~~~python
 v = [1,2,3]
@@ -560,8 +610,8 @@ s = 0
 for i in v:
 	s += i
 	v.append(i)
-	# modificar `v` no meio da iteração
-	# Python 3.6: o ciclo não termina!
+	# modificar `v` no meio da iteração;
+	# o ciclo não termina!
 # fim do ciclo;
 # é seguro modificar `v` aqui
 v.append(999)
@@ -585,16 +635,17 @@ v.push(999); // OK
 Experimentar: [https://play.rust-lang.org](https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=d60a624bdb2942616cd9da665c9816be)
 
 
-## Extras 
+## Para explorar mais tarde
 
 * Polimorfismo paramétrico ("genéricos")
 * Associação de métodos a tipos
 * *Traits* (aka *type classes*)
 * *Lifetimes* explicitos de referências
+* Alocação na *heap*: `Box`, `Rc`, `Arc`
 * *Macros*
 * Tratamentos de erros
-* Concorrência
-* Systema *build* `cargo` e pacotes (*crates*)
+* Concorrência, *threads*, async I/O
+* Sistema de "build" `cargo` e pacotes (*crates*)
 
 ## Mais informação
 
@@ -606,10 +657,6 @@ Experimentar: [https://play.rust-lang.org](https://play.rust-lang.org/?version=s
 *Rust Book*
 
 : [https://doc.rust-lang.org/book/](https://doc.rust-lang.org/book/)
-
-
- 
-  
 
 
   

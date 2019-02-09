@@ -1,12 +1,14 @@
 
 
 html { background-color: black; }
-  body { background-color: white; border-radius: 12px }
+body { background-color: white; /* border-radius: 12px*/ }
   /* A section is a slide. It's size is 800x600, and this will never change */
   section {
-      font-family: Arial, serif;
-      font-size: 20pt;
-    }
+      font-family:  'Arial', sans-serif;
+      /* font-family: 'Liberation Sans Bold', sans-serif; */
+      font-size: 22pt;
+  }
+
   address, blockquote, dl, fieldset, form, h1, h2, h3, h4, h5, h6, hr, ol, p, pre, table, ul, dl { padding: 10px 20px 10px 20px; }
 
   td, th { padding-left: 10px; padding-right: 10px; }
@@ -40,7 +42,7 @@ html { background-color: black; }
     width: 100%;
     padding: 40px;
     text-align: right;
-    background-color: #F3F4F8;
+    background-color: #F3F4F8; 
     border-top: 1px solid #CCC;
   }
 
@@ -81,5 +83,5 @@ html { background-color: black; }
   }
 
   pre.sourceCode {
-      background-color: rgb(245,245,245);
+      background-color: #F3F4F8;
   }
