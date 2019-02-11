@@ -1,5 +1,5 @@
 ---
-title: À descoberta do *Rust*
+title: "À descoberta da linguagem *Rust*"
 author: Pedro Vasconcelos
 date: Janeiro 2019
 ...
@@ -51,53 +51,64 @@ Pre-requisitos:
 * *backends web*
 * ...
 
-<!--
-## *Performance* e previsibilidade?
 
-* Compilação para código máquina nativo
-     - usa a infra-estrutura de compiladores *LLVM*
-* Não necessita de *runtime system* ou *garbage collector*
-* Controlo sobre a *libertação de recursos*
-     - memória, *file handles*, *locks*
-	 - previsibilidade sobre *quando* são libertados
-
-
-## Segurança e fiabilidade?
-
-Garantias durante a compilação:
-
-* Recursos são libertados *exatamente* uma vez
-* Ausência de erros de execução
-	- *segmentation faults*, *null-pointer exceptions*,
-	  *iterator invalidation*
-* Prevenir acesso a recursos libertados (*use-after-free*)
-* Ausência de *race conditions* (concorrência)
-
-NB: sem custos extra de execução!
--->
 
 ## Controlo vs. segurança 
 
-<img align="center" width="90%" src="images/languages.svg"/>
+<img align="center" width="90%" src="images/controlsec.svg"/>
 
-## Utilizadores de *Rust* hoje
+. . .
 
-* Mozilla 
-    - Stylo (*engine* CSS do Firefox)
-	- Servo (*next-gen browser engine*)
-* Dropbox
-* Cloudflare
-* Atlassian
-* ...
+<span style="position: absolute; top:8ex; left:5ex; font-size: 150%;">C</span>
 
-[https://www.rust-lang.org/production/users](https://www.rust-lang.org/production/users)
+<span style="position: absolute; top:9ex; left:7ex; font-size: 150%;">C++</span>
 
+<span style="position: absolute; top:15ex; left:12ex; font-size: 150%;">Java</span>
+
+<span style="position: absolute; top:15ex; left:18ex; font-size: 150%;">OCaml</span>
+
+<span style="position: absolute; top:17ex; left:22ex; font-size: 150%;">Haskell</span>
+
+
+<span style="position: absolute; top:9ex; left:22ex; font-size: 150%;">Rust</span>
+
+## Rust: controlo com segurança
+
+* Compilação para código máquina nativo
+* Sem *runtime system* ou *garbage collector*
+* Controlo sobre a *libertação de recursos*
+     - memória, *file handles*, *locks*
+	 - previsibilidade sobre *quando* são libertados
+* Ausência de erros de execução
+	- *segmentation faults*, *null-pointer exceptions*, 
+	*user-after-free*, *race conditions*, ...
+* Abstrações de alto-nível 
+    - inferência de tipos, encaixe de padrões, funções de ordem superior,
+	...
 
 ## Influências
 
 \
 
 <img align="center" width="90%" src="images/rust-influences.svg"/>
+
+
+## Quem usa?
+
+--------------  ---------------------------------------------------- 
+Mozilla         <span class="smaller">Building the Servo browser engine, integrating into Firefox, other projects</span>
+Dropbox         <span class="smaller">Optimizing cloud file storage</span>
+Canonical       <span class="smaller">Everything from server monitoring to middleware</span>
+npm, Inc        <span class="smaller">Replacing C and rewriting performance-critical bottlenecks in the registry service architecture</span>
+Atlassian       <span class="smaller">We use Rust in a service for analyzing petabytes of source code</span>
+Chucklefish     <span class="smaller">Video game company using Rust in their new projects to get safe concurrency and portability</span>
+--------------  -----------------------------------------------------
+
+
+<center>
+[https://www.rust-lang.org/production/users](https://www.rust-lang.org/production/users)
+</center>
+
 
 
 # Hello, Rust!
@@ -233,7 +244,7 @@ Somar os quadrados dos inteiros de 1 a $n$.
 ~~~rust
 fn sum_squares(n: u32) -> u32 {
    let mut s = 0;
-   let mut i = 0;
+   let mut i = 1;
    while i<=n {
 	   s += i*i;
 	   i += 1;
@@ -395,8 +406,10 @@ int main() {
 }
 ~~~
 
-Se esquecermos o teste `ptr == NULL`:
-*SEGFAULT* durante a execução.
+. . .
+
+**Problema**: se esquermos o teste `ptr == NULL`:
+⚡*Segmentation Fault*.
 
 
 ## Programar sem *Nulls*
@@ -434,7 +447,8 @@ fn main() {
 ~~~ 
 
 * É **impossível** esquecer o teste `None` / `Some`
-* Não pode ocorrer *SEGFAULT*
+* Não há apontador no caso `None` \
+  $\implies$ não pode ocorrer *segmentation fault*
 
 
 
@@ -524,8 +538,7 @@ Uma referência `&T` (*immutable borrow*):
 
 
 ~~~rust
-/* Every time we say goodbye
-   I die a little ... */
+/* Every time we say goodbye I die a little ... */
 fn bye(p: &Person)  {
 	println!("Goodbye, {}", p.name);
 	p.age += 1; 
@@ -609,7 +622,7 @@ error[E0502]: cannot borrow `p` as immutable because it is also borrowed as muta
 ## Problemas com *aliasing*
 
 * *Aliasing* pode causar erros subtis 
-* Alguns erros comuns:
+* Alguns exemplos:
     - *use-after-free*
     - *iterator invalidation*
 	- *race conditions* (programas concorrentes)

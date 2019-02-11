@@ -83,3 +83,7 @@ body { background-color: white;  border-radius: 12px; }
   pre.sourceCode {
       background-color: #F3F4F8;
   }
+
+  .smaller {
+      font-size: 90%;
+  }
