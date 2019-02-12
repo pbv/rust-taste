@@ -75,7 +75,10 @@ body { background-color: white;  border-radius: 12px; }
   .incremental > *[aria-selected] ~ * { opacity: 0.0; }
 
 
- 
+  ul li > ul  {
+      font-size: 90%;
+  }
+  
   pre {
       margin: 10px;
   }
@@ -84,6 +87,11 @@ body { background-color: white;  border-radius: 12px; }
       background-color: #F3F4F8;
   }
 
+  .subtitle {
+      font-size: 120%;
+  }
+		    
+  
   .smaller {
       font-size: 90%;
   }

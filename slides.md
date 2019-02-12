@@ -1,6 +1,7 @@
 ---
-title: "À descoberta da linguagem *Rust*"
-author: Pedro Vasconcelos
+title: "À descoberta do *Rust*"
+subtitle: "`https://github.com/pbv/rust-taste`"
+author: "Pedro Vasconcelos <pbv@dcc.fc.up.pt>"
 date: Janeiro 2019
 ...
 
@@ -52,6 +53,21 @@ Pre-requisitos:
 * ...
 
 
+## Porque não C ou C++?
+
+. . .
+
+
+<div style="font-size:90%">
+
+<img width="100%" src="images/zdnet.png"/>
+
+> Memory safety errors are today's biggest attack surface for hackers (...)
+>The reason for this high percentage is because Windows has been **written mostly in C and C++**, two "memory-unsafe" programming languages.
+
+ZDNet.com, 11 de Fevereiro 2019.
+</div>
+
 
 ## Controlo vs. segurança 
 
@@ -76,15 +92,14 @@ Pre-requisitos:
 
 * Compilação para código máquina nativo
 * Sem *runtime system* ou *garbage collector*
-* Controlo sobre a *libertação de recursos*
+* Controlo sobre a libertação de recursos
      - memória, *file handles*, *locks*
 	 - previsibilidade sobre *quando* são libertados
 * Ausência de erros de execução
 	- *segmentation faults*, *null-pointer exceptions*, 
 	*user-after-free*, *race conditions*, ...
 * Abstrações de alto-nível 
-    - inferência de tipos, encaixe de padrões, funções de ordem superior,
-	...
+    - inferência de tipos, encaixe de padrões, funções de ordem superior
 
 ## Influências
 
