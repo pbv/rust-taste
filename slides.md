@@ -47,8 +47,7 @@ Pre-requisitos:
 * sistemas embutidos/críticos/tempo real
 * sistemas móveis (*smarphones*)
 * bibliotecas
-* compiladores e interpretadores
-* *runtime systems*
+* interpretadores e *runtime systems*
 * *backends web*
 * ...
 
@@ -717,6 +716,7 @@ Experimentar: [https://play.rust-lang.org](https://play.rust-lang.org/?version=s
 * Alocação na *heap*: `Box`, `Rc`, `Arc`, ...
 * *Lifetimes* explicitos 
 * "*Fighting the borrow checker*"
+* Uso de `unsafe`
 
 
 ## Não vimos
@@ -728,6 +728,7 @@ Experimentar: [https://play.rust-lang.org](https://play.rust-lang.org/?version=s
 * Tratamentos de erros
 * Concorrência, *threads*, async I/O
 * Sistema de "build" `cargo` e pacotes (*crates*)
+* Outros *backends* (*WebAssembly*)
 
 ## Mais informação
 
